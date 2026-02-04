@@ -1,6 +1,31 @@
-h1 {
-  color: red;
+.card-course-item {
+  margin-top: 16px;
 }
-h2 {
-  color: green;
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+/* File: src/public/css/app.css */
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%; /* Bo tròn ảnh */
+  margin-right: 6px; /* Cách tên ra một chút */
+  border: 1px solid #ffffff; /* Thêm viền trắng để ảnh nổi trên nền đen */
+  object-fit: cover; /* Đảm bảo ảnh không bị méo */
+}
+
+/* Tùy chỉnh thêm: Nếu muốn tên người dùng đậm hơn chút nữa */
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* Màu trắng sáng hơn mặc định của Bootstrap */
 }
