@@ -49,6 +49,14 @@ class CourseController {
       .then(() => res.redirect("/me/stored/courses"))
       .catch(next);
   }
+
+  // [PATCH] /courses/:id/restore
+  restore(req, res, next) {
+    Course.restore({ _id: req.params.id })
+      .lean()
+      .then(() => res.redirect("/me/stored/courses"))
+      .catch(next);
+  }
 }
 
 module.exports = new CourseController();
