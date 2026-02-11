@@ -1,1 +1,26 @@
-<h1>NEW PAGES</h1>
+<div class="mt-4">
+    <div class="row">
+        {{#each news}}
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-course-item" style="margin-top: 16px;">
+                <a href="/news/{{this.slug}}">
+                    <img class="card-img-top" src="{{this.image}}" alt="{{this.title}}"
+                        style="height: 200px; object-fit: cover;">
+                </a>
+                <div class="card-body">
+                    <a href="/news/{{this.slug}}" style="text-decoration: none; color: #333;">
+                        <h5 class="card-title">{{this.title}}</h5>
+                    </a>
+                    <p class="card-text">{{this.description}}</p>
+                    <a href="/news/{{this.slug}}" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div class="col-12 text-center">
+            <p>Chưa có bài viết nào được đăng.</p>
+            <a href="/news/create" class="btn btn-success">Đăng bài viết ngay</a>
+        </div>
+        {{/each}}
+    </div>
+</div>

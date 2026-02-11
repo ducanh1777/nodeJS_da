@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+.card-course-item {
+  margin-top: 16px;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+/* File: src/public/css/app.css */
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  /* Bo tròn ảnh */
+  margin-right: 6px;
+  /* Cách tên ra một chút */
+  border: 1px solid #ffffff;
+  /* Thêm viền trắng để ảnh nổi trên nền đen */
+  object-fit: cover;
+  /* Đảm bảo ảnh không bị méo */
+}
+
+/* Tùy chỉnh thêm: Nếu muốn tên người dùng đậm hơn chút nữa */
+/* Sticky Footer */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app>.container {
+  flex: 1;
+}
+
+.footer {
+  margin-top: auto;
+}

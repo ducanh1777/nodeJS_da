@@ -7,6 +7,9 @@ const app = express();
 const port = 3000;
 const sass = require("sass");
 const fs = require("fs");
+const cookieParser = require('cookie-parser');
+const authMiddleware = require('./app/middlewares/AuthMiddleware');
+const sortMiddleware = require('./app/middlewares/SortMiddleware');
 
 const route = require("./routes");
 const db = require("./config/db");
@@ -35,13 +38,15 @@ app.use(
 app.use(express.json());
 app.use(methodOverride("_method"));
 
+app.use(cookieParser());
+app.use(authMiddleware);
+app.use(sortMiddleware);
+
 app.engine(
   "hbs",
   handlebars({
     extname: ".hbs",
-    helpers: {
-      sum: (a, b) => a + b,
-    },
+    helpers: require('./app/helpers/handlebars'),
   }),
 );
 app.set("view engine", "hbs");

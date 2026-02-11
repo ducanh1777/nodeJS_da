@@ -2,26 +2,35 @@
   <div class="row">
 
     {{#each courses}}
-      <div class="col-sm-6 col-lg-4">
-        <div class="card card-course-item">
-          <a href="/courses/{{this.slug}}">
-            <img
-              src="{{this.image}}"
-              class="card-img-top"
-              alt="{{this.name}}"
-            />
+    <div class="col-sm-6 col-lg-4">
+      <div class="card card-course-item" style="margin-top: 16px; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <a href="/courses/{{this.slug}}">
+          <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}"
+            style="border-radius: 4px; height: 200px; object-fit: cover;">
+        </a>
+        <div class="card-body">
+          <a href="/courses/{{this.slug}}" style="text-decoration: none; color: #333;">
+            <h5 class="card-title" style="font-weight: 600;">{{this.name}}</h5>
           </a>
-
-          <div class="card-body">
-            <a href="/courses/{{this.slug}}">
-              <h5 class="card-title">{{this.name}}</h5>
-            </a>
-
-            <p class="card-text">{{this.description}}</p>
-            <a href="#" class="btn btn-primary">Mua</a>
+          <p class="card-text text-muted" style="font-size: 0.9rem; height: 60px; overflow: hidden;">
+            {{this.description}}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <a href="/courses/{{this.slug}}" class="btn btn-primary btn-sm">Xem chi tiết</a>
+            <span class="badge badge-success">
+              {{#if this.price}}
+              {{this.price}} đ
+              {{else}}
+              Miễn phí
+              {{/if}}
+            </span>
           </div>
         </div>
       </div>
+    </div>
+    {{else}}
+    <div class="col-12 text-center mt-4">
+      <p>Chưa có khóa học nào được đăng.</p>
+    </div>
     {{/each}}
   </div>
 </div>

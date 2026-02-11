@@ -1,0 +1,337 @@
+<div class="mt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="news-detail-container bg-white p-4 shadow-sm rounded">
+                <h1 class="mb-3">{{news.title}}</h1>
+
+                <div class="d-flex align-items-center mb-4 text-muted">
+                    <img src="https://files.f8.edu.vn/f8-prod/user_photos/360703/65105d07c2f4b.jpg" alt="Author"
+                        class="user-avatar mr-2">
+                    <span>Đăng bởi <strong>{{news.user_id.fullname}}</strong></span>
+                    <span class="mx-2">•</span>
+                    <span>{{news.createdAt}}</span>
+                </div>
+
+                <div class="news-content mb-4">
+                    <p class="font-weight-bold">{{news.description}}</p>
+                    <img src="{{news.image}}" alt="{{news.title}}" class="img-fluid mb-3 rounded w-100">
+                    <div>{{{news.content}}}</div>
+                </div>
+
+                <hr>
+
+                <!-- Actions -->
+                <div class="news-actions d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <!-- Like Button (AJAX) -->
+                        <button class="btn {{#if isLiked}}btn-primary{{else}}btn-light{{/if}} mr-2 font-weight-bold"
+                            id="btn-like-news" onclick="toggleLikeNews('{{news._id}}')">
+                            <i class="oi oi-thumb-up mr-1"></i> Thích (<span id="like-count-news">{{likeCount}}</span>)
+                        </button>
+
+                        <button class="btn btn-light" onclick="document.getElementById('comment-input').focus()">
+                            <i class="oi oi-comment-square mr-1"></i> Bình luận ({{comments.length}})
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-light" onclick="copyLink()">
+                            <i class="oi oi-share mr-1"></i> Chia sẻ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="news-comments bg-light p-3 rounded">
+                    <h5 class="mb-3">Bình luận</h5>
+
+                    <form id="comment-form" class="d-flex mb-3" onsubmit="submitComment(event, '{{news._id}}')">
+                        <img src="{{user.avatar}}"
+                            onerror="this.src='https://files.f8.edu.vn/f8-prod/user_photos/360703/65105d07c2f4b.jpg'"
+                            class="user-avatar mr-2" style="width: 32px; height: 32px;">
+                        <div class="input-group">
+                            <input type="text" id="comment-input" name="content" class="form-control rounded-pill"
+                                placeholder="Viết bình luận của bạn..." required>
+                            <div class="input-group-append ml-2">
+                                <button class="btn btn-primary rounded-pill px-4" type="submit">Gửi</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="comments-list">
+                        <!-- List of comments (Real Data) -->
+                        {{#each comments}}
+                        <div class="comment-item mb-3" id="comment-item-{{this._id}}">
+                            <div class="d-flex">
+                                <img src="{{this.user_id.avatar}}"
+                                    onerror="this.src='https://files.f8.edu.vn/f8-prod/user_photos/360703/65105d07c2f4b.jpg'"
+                                    class="user-avatar mr-2" style="width: 32px; height: 32px;">
+                                <div class="d-flex flex-column" style="flex: 1;">
+                                    <div class="bg-white p-2 px-3 rounded position-relative">
+                                        <div class="font-weight-bold">{{this.user_id.fullname}}</div>
+                                        <div id="comment-content-{{this._id}}">{{this.content}}</div>
+
+                                        <!-- Edit Form (Hidden by default) -->
+                                        <form onsubmit="submitEditComment(event, '{{this._id}}')"
+                                            id="edit-form-{{this._id}}" style="display: none;">
+                                            <div class="input-group mt-2">
+                                                <input type="text" id="edit-input-{{this._id}}" name="content"
+                                                    class="form-control" value="{{this.content}}" required>
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-sm btn-success" type="submit">Lưu</button>
+                                                    <button class="btn btn-sm btn-secondary" type="button"
+                                                        onclick="cancelEdit('{{this._id}}')">Hủy</button>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                    </div>
+
+                                    <div class="ml-2 mt-1 d-flex align-items-center" style="font-size: 0.9rem;">
+                                        <!-- Like Comment Button (AJAX) -->
+                                        <button class="btn btn-link btn-sm p-0 mr-3 font-weight-bold"
+                                            style="text-decoration: none; {{#if (includes this.likes ../user._id)}}color: #007bff;{{else}}color: #6c757d;{{/if}}"
+                                            id="btn-like-comment-{{this._id}}"
+                                            onclick="toggleLikeComment('{{this._id}}')">
+                                            Thích <span id="like-count-comment-{{this._id}}">{{#if
+                                                this.likes.length}}({{this.likes.length}}){{/if}}</span>
+                                        </button>
+
+                                        <small class="text-muted mr-3">Phản hồi</small>
+                                        <small class="text-muted mr-auto">{{this.createdAt}}</small>
+
+                                        <!-- Edit & Delete Buttons (Conditional) -->
+                                        <div class="comment-actions">
+                                            {{#if (eq ../user._id this.user_id._id)}}
+                                            <button class="btn btn-link btn-sm p-0 text-muted mr-2"
+                                                onclick="showEdit('{{this._id}}')">Sửa</button>
+                                            {{/if}}
+
+                                            {{#if (eq ../user._id this.user_id._id)}}
+                                            <!-- Delete for owner -->
+                                            <button class="btn btn-link btn-sm p-0 text-muted text-danger"
+                                                onclick="deleteComment('{{this._id}}')">Xóa</button>
+                                            {{else}}
+                                            <!-- Delete for post owner or admin -->
+                                            {{#if (eq ../user._id ../news.user_id._id)}}
+                                            <button class="btn btn-link btn-sm p-0 text-muted text-danger"
+                                                onclick="deleteComment('{{this._id}}')">Xóa (QTV)</button>
+                                            {{/if}}
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{else}}
+                        <p class="text-center text-muted" id="no-comments-msg">Chưa có bình luận nào. Hãy là người đầu
+                            tiên!</p>
+                        {{/each}}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href).then(function () {
+            alert('Đã sao chép liên kết vào bộ nhớ tạm!');
+        }, function (err) {
+            console.error('Could not copy text: ', err);
+            alert('Không thể sao chép liên kết. Vui lòng copy thủ công trên thanh địa chỉ.');
+        });
+    }
+
+    function showEdit(commentId) {
+        document.getElementById('comment-content-' + commentId).style.display = 'none';
+        document.getElementById('edit-form-' + commentId).style.display = 'block';
+    }
+
+    function cancelEdit(commentId) {
+        document.getElementById('comment-content-' + commentId).style.display = 'block';
+        document.getElementById('edit-form-' + commentId).style.display = 'none';
+    }
+
+    // AJAX Like News
+    function toggleLikeNews(newsId) {
+        fetch(`/news/${newsId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const btn = document.getElementById('btn-like-news');
+                    const countSpan = document.getElementById('like-count-news');
+
+                    countSpan.innerText = data.likeCount;
+                    if (data.isLiked) {
+                        btn.classList.remove('btn-light');
+                        btn.classList.add('btn-primary');
+                    } else {
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-light');
+                    }
+                } else {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    // AJAX Like Comment
+    function toggleLikeComment(commentId) {
+        fetch(`/news/comments/${commentId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const btn = document.getElementById(`btn-like-comment-${commentId}`);
+                    const countSpan = document.getElementById(`like-count-comment-${commentId}`);
+
+                    if (data.likeCount > 0) {
+                        countSpan.innerText = `(${data.likeCount})`;
+                    } else {
+                        countSpan.innerText = '';
+                    }
+
+                    if (data.isLiked) {
+                        btn.style.color = '#007bff';
+                    } else {
+                        btn.style.color = '#6c757d';
+                    }
+                } else {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    // AJAX Create Comment
+    function submitComment(e, newsId) {
+        e.preventDefault();
+        const input = document.getElementById('comment-input');
+        const content = input.value;
+        if (!content) return;
+
+        fetch(`/news/${newsId}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    input.value = '';
+                    const noCommentsMsg = document.getElementById('no-comments-msg');
+                    if (noCommentsMsg) noCommentsMsg.remove();
+
+                    const commentsList = document.getElementById('comments-list');
+                    const comment = data.comment;
+
+                    const html = `
+                <div class="comment-item mb-3" id="comment-item-${comment._id}">
+                    <div class="d-flex">
+                        <img src="${comment.user_id.avatar || 'https://files.f8.edu.vn/f8-prod/user_photos/360703/65105d07c2f4b.jpg'}" class="user-avatar mr-2" style="width: 32px; height: 32px;">
+                        <div class="d-flex flex-column" style="flex: 1;">
+                            <div class="bg-white p-2 px-3 rounded position-relative">
+                                <div class="font-weight-bold">${comment.user_id.fullname}</div>
+                                <div id="comment-content-${comment._id}">${comment.content}</div>
+                                
+                                <form onsubmit="submitEditComment(event, '${comment._id}')" id="edit-form-${comment._id}" style="display: none;">
+                                    <div class="input-group mt-2">
+                                        <input type="text" id="edit-input-${comment._id}" name="content" class="form-control" value="${comment.content}" required>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-sm btn-success" type="submit">Lưu</button>
+                                            <button class="btn btn-sm btn-secondary" type="button" onclick="cancelEdit('${comment._id}')">Hủy</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="ml-2 mt-1 d-flex align-items-center" style="font-size: 0.9rem;">
+                                <button 
+                                    class="btn btn-link btn-sm p-0 mr-3 font-weight-bold" 
+                                    style="text-decoration: none; color: #6c757d;"
+                                    id="btn-like-comment-${comment._id}"
+                                    onclick="toggleLikeComment('${comment._id}')">
+                                    Thích <span id="like-count-comment-${comment._id}"></span>
+                                </button>
+
+                                <small class="text-muted mr-3">Phản hồi</small>
+                                <small class="text-muted mr-auto">Vừa xong</small>
+
+                                <div class="comment-actions">
+                                    <button class="btn btn-link btn-sm p-0 text-muted mr-2" onclick="showEdit('${comment._id}')">Sửa</button>
+                                    <button class="btn btn-link btn-sm p-0 text-muted text-danger" onclick="deleteComment('${comment._id}')">Xóa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+
+                    commentsList.insertAdjacentHTML('afterbegin', html);
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    // AJAX Delete Comment
+    function deleteComment(commentId) {
+        if (!confirm('Bạn chắc chắn muốn xóa bình luận này?')) return;
+
+        fetch(`/news/comments/${commentId}`, {
+            method: 'DELETE',
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const item = document.getElementById(`comment-item-${commentId}`);
+                    if (item) item.remove();
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Không thể xóa'));
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    // AJAX Edit Comment
+    function submitEditComment(e, commentId) {
+        e.preventDefault();
+        const input = document.getElementById(`edit-input-${commentId}`);
+        const content = input.value;
+        if (!content) return;
+
+        fetch(`/news/comments/${commentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`comment-content-${commentId}`).innerText = data.comment.content;
+                    cancelEdit(commentId);
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Không thể cập nhật'));
+                }
+            })
+            .catch(err => console.error(err));
+    }
+</script>

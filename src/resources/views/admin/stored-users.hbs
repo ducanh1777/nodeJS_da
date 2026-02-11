@@ -1,0 +1,56 @@
+<div class="mt-4">
+    <h3>Danh sách người dùng</h3>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tên đăng nhập</th>
+                <th scope="col">Họ và tên</th>
+                <th scope="col">Email</th>
+                <th scope="col">Vai trò</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each users}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.username}}</td>
+                <td>{{this.fullname}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.role}}</td>
+                <td>
+                    {{#if this.isBlocked}}
+                    <span class="badge badge-danger">Đã khóa</span>
+                    {{else}}
+                    <span class="badge badge-success">Hoạt động</span>
+                    {{/if}}
+                </td>
+                <td>
+                    {{#if this.isBlocked}}
+                    <form action="/admin/users/{{this._id}}/toggle-block?_method=PATCH" method="POST"
+                        style="display: inline-block;">
+                        <input type="hidden" name="isBlocked" value="false">
+                        <button type="submit" class="btn btn-sm btn-success">Mở khóa</button>
+                    </form>
+                    {{else}}
+                    <form action="/admin/users/{{this._id}}/toggle-block?_method=PATCH" method="POST"
+                        style="display: inline-block;">
+                        <input type="hidden" name="isBlocked" value="true">
+                        <button type="submit" class="btn btn-sm btn-danger">Khóa</button>
+                    </form>
+                    {{/if}}
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="6" class="text-center">
+                    Bạn chưa có người dùng nào.
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

@@ -10,8 +10,18 @@ class SiteController {
   }
 
   // [GET] /search
-  search(req, res) {
-    res.render("search");
+  search(req, res, next) {
+    const { q } = req.query;
+    if (q) {
+      Course.find({ name: { $regex: q, $options: 'i' } })
+        .lean()
+        .then(courses => {
+          res.render("search", { courses, q });
+        })
+        .catch(next);
+    } else {
+      res.render("search");
+    }
   }
 }
 

@@ -13,6 +13,8 @@ const Course = new Schema(
     videoID: { type: String, required: true },
     level: { type: String },
     slug: { type: String, slug: "name", unique: true },
+    user_id: { type: Schema.Types.ObjectId, ref: 'User' },
+    price: { type: Number, default: 0 },
   },
   {
     timestamps: true,
